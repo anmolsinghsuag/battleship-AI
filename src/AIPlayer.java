@@ -88,7 +88,7 @@ public class AIPlayer {
                 }
             }
         }
-        return new Coordinate(-1, -1);
+        return new Coordinate(0, 0);
     }
 
     //Return coordinate based on previous hits
@@ -439,5 +439,13 @@ public class AIPlayer {
 
     public void setSunkShips(boolean[] sunkShips) {
         this.sunkShips = sunkShips;
+    }
+
+    public boolean isEngaged() {
+        return engaged;
+    }
+
+    public void setEngaged(boolean engaged) {
+        this.engaged = engaged;
     }
 }
