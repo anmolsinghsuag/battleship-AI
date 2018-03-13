@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 
 import javax.swing.JPanel;
+/* Heatmap utility used as is from author*
 
 /**
  *

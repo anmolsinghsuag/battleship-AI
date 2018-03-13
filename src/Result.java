@@ -1,6 +1,7 @@
 import java.util.List;
 
 public class Result {
+
     boolean hit;
     int shipNumber;
     List<Coordinate> coordinates;

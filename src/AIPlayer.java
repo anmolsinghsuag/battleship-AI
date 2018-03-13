@@ -12,12 +12,14 @@ public class AIPlayer {
     private List<Integer> sinkPile;
     private Map<Integer, List<Coordinate>> engagedRows;
     private Map<Integer, List<Coordinate>> engagedCols;
-    private Map<Integer,List<Coordinate>> personalBoard;
+    private Map<Integer, List<Coordinate>> personalBoard;
     private boolean engaged;
     private Coordinate lastHit;
+    private String name;
 
-    public AIPlayer() {
+    public AIPlayer(String name) {
         this.board = new Board();
+        this.name = name;
         init();
     }
 
@@ -36,14 +38,13 @@ public class AIPlayer {
         this.personalBoard = new HashMap<>();
         for (int i = 0; i < Constants.MAX_ROW; i++) {
             for (int j = 0; j < Constants.MAX_COL; j++) {
-                if(this.board.getBoard()[i][j]!=0){
-                    if(this.personalBoard.containsKey(this.board.getBoard()[i][j])){
-                        this.personalBoard.get(this.board.getBoard()[i][j]).add(new Coordinate(i,j));
-                    }
-                    else{
+                if (this.board.getBoard()[i][j] != 0) {
+                    if (this.personalBoard.containsKey(this.board.getBoard()[i][j])) {
+                        this.personalBoard.get(this.board.getBoard()[i][j]).add(new Coordinate(i, j));
+                    } else {
                         List<Coordinate> l = new ArrayList<>();
-                        l.add(new Coordinate(i,j));
-                        this.personalBoard.put(this.board.getBoard()[i][j],l);
+                        l.add(new Coordinate(i, j));
+                        this.personalBoard.put(this.board.getBoard()[i][j], l);
                     }
                 }
 
@@ -63,16 +64,16 @@ public class AIPlayer {
     /*******************************************************************************************************/
     //Funtions to decide the move
     public Coordinate playMove() {
-        System.out.println("Engaged ="+this.engaged);
+        System.out.println("Engaged =" + this.engaged);
         Coordinate move;
         if (engaged) {
             computeEngagedProbMatrix();
-            move= chooseEngagedHit();
+            move = chooseEngagedHit();
         } else {
             computeProbMatrix();
-            move= chooseRandomHit();
+            move = chooseRandomHit();
         }
-        this.lastHit=move;
+        this.lastHit = move;
         return move;
     }
 
@@ -93,19 +94,19 @@ public class AIPlayer {
 
     //Return coordinate based on previous hits
     public Coordinate chooseEngagedHit() {
-        int maxRow=-1;
-        int maxCol=-1;
+        int maxRow = -1;
+        int maxCol = -1;
         float maxProb = -1;
         for (int i = 0; i < Constants.MAX_ROW; i++) {
             for (int j = 0; j < Constants.MAX_COL; j++) {
-                if(this.engagedProbMatrix[i][j]>maxProb){
+                if (this.engagedProbMatrix[i][j] > maxProb) {
                     maxProb = this.engagedProbMatrix[i][j];
                     maxRow = i;
                     maxCol = j;
                 }
             }
         }
-        return new Coordinate(maxRow,maxCol);
+        return new Coordinate(maxRow, maxCol);
     }
 
     /*******************************************************************************************************/
@@ -232,53 +233,52 @@ public class AIPlayer {
     }
 
     public void setEngagedProb(int i, int length, int dir) {
-        if(dir==1){
+        if (dir == 1) {
             for (int m = 0; m <= Constants.MAX_COL - length; m++) {
                 int totalHits = 0;
                 boolean valid = true;
                 for (int n = m; n < m + length; n++) {
                     if (this.opponentBoard[i][n] >= 0) {
-                        valid=false;
+                        valid = false;
                     }
-                    if(this.opponentBoard[i][n] == -2){
-                        totalHits+=1;
+                    if (this.opponentBoard[i][n] == -2) {
+                        totalHits += 1;
                     }
                 }
-                if(totalHits>length){
-                    valid=false;
+                if (totalHits > length) {
+                    valid = false;
                 }
-                if(valid){
+                if (valid) {
                     for (int n = m; n < m + length; n++) {
-                        if(this.opponentBoard[i][n]==-2){
+                        if (this.opponentBoard[i][n] == -2) {
                             continue;
                         }
-                        this.engagedProbMatrix[i][n]+=totalHits;
+                        this.engagedProbMatrix[i][n] += totalHits;
                     }
                 }
             }
 
-        }
-        else{
+        } else {
             for (int m = 0; m <= Constants.MAX_ROW - length; m++) {
                 int totalHits = 0;
                 boolean valid = true;
                 for (int n = m; n < m + length; n++) {
                     if (this.opponentBoard[n][i] >= 0) {
-                        valid=false;
+                        valid = false;
                     }
-                    if(this.opponentBoard[n][i] == -2){
-                        totalHits+=1;
+                    if (this.opponentBoard[n][i] == -2) {
+                        totalHits += 1;
                     }
                 }
-                if(totalHits>length){
-                    valid=false;
+                if (totalHits > length) {
+                    valid = false;
                 }
-                if(valid){
+                if (valid) {
                     for (int n = m; n < m + length; n++) {
-                        if(this.opponentBoard[n][i]==-2){
+                        if (this.opponentBoard[n][i] == -2) {
                             continue;
                         }
-                        this.engagedProbMatrix[n][i]+=totalHits;
+                        this.engagedProbMatrix[n][i] += totalHits;
                     }
                 }
             }
@@ -322,7 +322,6 @@ public class AIPlayer {
 
     /*******************************************************************************************************/
     //Functions to mark the result of a move
-
     public void markResult(Result result) {
         boolean hit = result.isHit();
         Coordinate coordinate = this.lastHit;
@@ -332,55 +331,51 @@ public class AIPlayer {
             this.opponentBoard[coordinate.getX()][coordinate.getY()] = 0;
         } else {
 
-            if(this.engagedRows.containsKey(coordinate.getX())){
+            if (this.engagedRows.containsKey(coordinate.getX())) {
                 this.engagedRows.get(coordinate.getX()).add(coordinate);
-            }
-            else{
+            } else {
                 List<Coordinate> l = new ArrayList<>();
                 l.add(coordinate);
-                this.engagedRows.put(coordinate.getX(),l);
+                this.engagedRows.put(coordinate.getX(), l);
             }
-            if(this.engagedCols.containsKey(coordinate.getY())){
+            if (this.engagedCols.containsKey(coordinate.getY())) {
                 this.engagedCols.get(coordinate.getY()).add(coordinate);
-            }
-            else{
+            } else {
                 List<Coordinate> l = new ArrayList<>();
                 l.add(coordinate);
-                this.engagedCols.put(coordinate.getY(),l);
+                this.engagedCols.put(coordinate.getY(), l);
             }
-            this.opponentBoard[coordinate.getX()][coordinate.getY()]=-2;
-            this.engaged=true;
+            this.opponentBoard[coordinate.getX()][coordinate.getY()] = -2;
+            this.engaged = true;
             this.hits.add(coordinate);
-            if(shipNumber!=-1){
-             sinkShipWithCoordinates(result.getCoordinates(),shipNumber);
+            if (shipNumber != -1) {
+                sinkShipWithCoordinates(result.getCoordinates(), shipNumber);
             }
         }
 
     }
 
-    public void sinkShip(int shipNumber){
-        int length=Constants.SHIP_SIZES[shipNumber-1];
-        Coordinate lastHit= this.lastHit;
-        boolean inRow=false;
-        boolean inCol=false;
-        int rowL=this.engagedRows.get(lastHit.getX()).size();
-        int colL=this.engagedCols.get(lastHit.getY()).size();
-        if(this.engagedRows.get(lastHit.getX()).size()==length){
+    public void sinkShip(int shipNumber) {
+        int length = Constants.SHIP_SIZES[shipNumber - 1];
+        Coordinate lastHit = this.lastHit;
+        boolean inRow = false;
+        boolean inCol = false;
+        int rowL = this.engagedRows.get(lastHit.getX()).size();
+        int colL = this.engagedCols.get(lastHit.getY()).size();
+        if (this.engagedRows.get(lastHit.getX()).size() == length) {
             inRow = true;
         }
-        if(this.engagedCols.get(lastHit.getY()).size()==length){
+        if (this.engagedCols.get(lastHit.getY()).size() == length) {
             inCol = true;
         }
-        if(inRow && !inCol){
-            sinkShipWithCoordinates(this.engagedRows.get(lastHit.getX()),shipNumber);
+        if (inRow && !inCol) {
+            sinkShipWithCoordinates(this.engagedRows.get(lastHit.getX()), shipNumber);
+        } else if (!inRow && inCol) {
+            sinkShipWithCoordinates(this.engagedCols.get(lastHit.getY()), shipNumber);
+        } else if (inRow && inCol && length == 1) {
+            sinkShipWithCoordinates(this.engagedCols.get(lastHit.getY()), shipNumber);
         }
-        else if(!inRow && inCol){
-            sinkShipWithCoordinates(this.engagedCols.get(lastHit.getY()),shipNumber);
-        }
-        else if(inRow && inCol && length==1){
-            sinkShipWithCoordinates(this.engagedCols.get(lastHit.getY()),shipNumber);
-        }
-        System.out.println("Row Length="+rowL+" Column Length="+colL+" length="+length+" 1: "+inRow+" 2: "+inCol);
+        System.out.println("Row Length=" + rowL + " Column Length=" + colL + " length=" + length + " 1: " + inRow + " 2: " + inCol);
         System.out.println("Comes here");
 
 
@@ -398,41 +393,40 @@ public class AIPlayer {
 
         this.sunkShips[shipNumber - 1] = true;
         //System.out.println("Hit Size:"+this.hits.size());
-        if(this.hits.size()==0){
-            this.engaged=false;
+        if (this.hits.size() == 0) {
+            this.engaged = false;
         }
     }
 
     /*******************************************************************************************************/
     //Functions to return response of opponent's hit
-
-    public Result getResult(Coordinate coordinate){
-        boolean hit=false;
-        int shipNumber=-1;
+    public Result getResult(Coordinate coordinate) {
+        boolean hit = false;
+        int shipNumber = -1;
         List<Coordinate> r = new ArrayList<>();
         int hitCell = this.board.getBoard()[coordinate.getX()][coordinate.getY()];
-        if(hitCell!=0){
-            hit=true;
+        if (hitCell != 0) {
+            hit = true;
             this.personalBoard.get(hitCell).remove(coordinate);
             //System.out.println("Length of "+hitCell+" becomes "+this.personalBoard.get(hitCell).size());
-            if(this.personalBoard.get(hitCell).size()==0){
-                shipNumber=hitCell;
+            if (this.personalBoard.get(hitCell).size() == 0) {
+                shipNumber = hitCell;
                 for (int i = 0; i < Constants.MAX_ROW; i++) {
                     for (int j = 0; j < Constants.MAX_COL; j++) {
-                        if(this.board.getBoard()[i][j]==hitCell){
-                            r.add(new Coordinate(i,j));
+                        if (this.board.getBoard()[i][j] == hitCell) {
+                            r.add(new Coordinate(i, j));
                         }
                     }
                 }
 
             }
         }
-        return new Result(hit,shipNumber,r);
+        return new Result(hit, shipNumber, r);
     }
+
     /*******************************************************************************************************/
 
     //Getter Setters
-
     public boolean[] getSunkShips() {
         return sunkShips;
     }
@@ -447,5 +441,13 @@ public class AIPlayer {
 
     public void setEngaged(boolean engaged) {
         this.engaged = engaged;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

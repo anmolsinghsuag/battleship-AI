@@ -1,4 +1,5 @@
 public class Constants {
+    //Carries the constants
     public static int MAX_ROW = 10;
     public static int MAX_COL = 10;
     public static int TOTAL_SHIPS=7;
