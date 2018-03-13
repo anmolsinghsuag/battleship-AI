@@ -307,7 +307,7 @@ public class AIPlayer {
 
     //Converts probMatrix to probabilties
     public void convertToProbability(float[][] matrix) {
-        int total = 0;
+        float total = 0;
         for (int i = 0; i < Constants.MAX_ROW; i++) {
             for (int j = 0; j < Constants.MAX_COL; j++) {
                 total += matrix[i][j];

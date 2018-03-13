@@ -4,6 +4,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.peer.CanvasPeer;
 
 public class BattleshipGUI {
     private int width;
@@ -26,6 +27,10 @@ public class BattleshipGUI {
     private JLabel player2wins;
     private boolean paused;
     private long waitTime;
+    private ImageIcon shipIcon;
+    private ImageIcon cross;
+    private ImageIcon start;
+
 
 
 
@@ -38,6 +43,10 @@ public class BattleshipGUI {
         mainPanel.setBackground(Color.white);
         this.paused=false;
         this.waitTime=1000;
+        this.shipIcon=new  ImageIcon(getClass().getResource("steering.png"));
+        this.cross=new  ImageIcon(getClass().getResource("cancel.png"));
+        this.start = new ImageIcon(getClass().getResource("power-button.png"));
+
         initInfoPanel();
         initBoards();
         initProbBoards();
@@ -55,10 +64,14 @@ public class BattleshipGUI {
         this.player1Panel = new JPanel();
         this.player1Panel.setBorder(border1);
         this.player1Panel.setLayout(new GridLayout(10, 10));
+        this.player1Panel.setSize(new Dimension(300, 300));
+        this.player1Panel.setMinimumSize(new Dimension(300, 300));
         this.player1Panel.setMaximumSize(new Dimension(300, 300));
         this.player2Panel = new JPanel();
         this.player2Panel.setBorder(border2);
         this.player2Panel.setLayout(new GridLayout(10, 10));
+        this.player2Panel.setSize(new Dimension(300, 300));
+        this.player2Panel.setMinimumSize(new Dimension(300, 300));
         this.player2Panel.setMaximumSize(new Dimension(300, 300));
         this.player1Panel.setBackground(Color.white);
         this.player2Panel.setBackground(Color.white);
@@ -67,6 +80,7 @@ public class BattleshipGUI {
             for (int j=0; j<Constants.MAX_COL; j++) {
                 JButton btn = new JButton();
                 btn.setPreferredSize(new Dimension(30, 30));
+                btn.setSize(new Dimension(30, 30));
                 btn.setBorder(new LineBorder(Color.WHITE,1));
                 btn.setBorderPainted(true);
                 btn.setBackground(new Color(64,163,245));
@@ -76,6 +90,7 @@ public class BattleshipGUI {
 
                 JButton btn2 = new JButton();
                 btn2.setPreferredSize(new Dimension(30, 30));
+                btn2.setSize(new Dimension(30, 30));
                 btn2.setBorder(new LineBorder(Color.WHITE,1));
                 btn2.setBorderPainted(true);
                 btn2.setBackground(new Color(64,163,245));
@@ -100,7 +115,7 @@ public class BattleshipGUI {
                 data[i][j]= 0;
             }
         }
-        Color [] colors=new Color[]{Color.white,new Color(27,138,90),new Color(251,176,33),new Color(246,136,56),new Color(238,62,50)};
+        Color [] colors=new Color[]{new Color(254,232,200),new Color(253,187,132),new Color(251,176,33),new Color(246,136,56),new Color(238,62,50)};
         this.player1Prob = new HeatMap(data,false,colors);
         this.player1Prob.setBorder(border1);
         this.player2Prob = new HeatMap(data,false,colors);
@@ -144,7 +159,7 @@ public class BattleshipGUI {
 
         this.speed.setBackground(Color.lightGray);
         this.infoPanel.add(this.speed);
-        this.infoPanel.setPreferredSize(new Dimension(500, 150));
+        this.infoPanel.setPreferredSize(new Dimension(600, 150));
     }
 
     public void init(){
@@ -168,6 +183,8 @@ public class BattleshipGUI {
     public void update(int[][]player1board,int[][] player1Opp,int[][] player2Board,int[][] player2Opp,float[][]prob1,float[][]prob2){
         for(int i=0;i<Constants.MAX_ROW;i++){
             for(int j=0;j<Constants.MAX_COL;j++){
+                this.player1[i][j].setIcon(null);
+                this.player2[i][j].setIcon(null);
                 if(player1board[i][j]==0){
                     this.player1[i][j].setBackground(new Color(64,163,245));
                 }
@@ -176,9 +193,12 @@ public class BattleshipGUI {
                 }
                 if(player2Opp[i][j]==0){
                     this.player1[i][j].setBackground(new Color(255,96,96)); //red
+                    this.player1[i][j].setIcon(this.cross);
+
                 }
                 if(player2Opp[i][j]>0){
                     this.player1[i][j].setBackground(new Color(32,183,150));
+                    this.player1[i][j].setIcon(this.shipIcon);
                 }
                 if(player2Opp[i][j]==-2){
                     this.player1[i][j].setBackground(new Color(255,193,7));
@@ -191,10 +211,12 @@ public class BattleshipGUI {
                     this.player2[i][j].setBackground(new Color(230,230,237));
                 }
                 if(player1Opp[i][j]==0){
-                    this.player2[i][j].setBackground(new Color(255,96,96)); //red
+                   this.player2[i][j].setBackground(new Color(255,96,96)); //red
+                    this.player2[i][j].setIcon(this.cross);
                 }
                 if(player1Opp[i][j]>0){
-                    this.player2[i][j].setBackground(new Color(32,183,150));
+                   this.player2[i][j].setBackground(new Color(32,183,150));
+                    this.player2[i][j].setIcon(this.shipIcon);
                 }
                 if(player1Opp[i][j]==-2){
                     this.player2[i][j].setBackground(new Color(255,193,7));

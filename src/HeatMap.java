@@ -135,6 +135,10 @@ public class HeatMap extends JPanel {
 
         this.setPreferredSize(new Dimension(300,
                 300));
+        this.setMaximumSize(new Dimension(300,
+                300));
+        this.setMinimumSize(new Dimension(300,
+                300));
         this.setDoubleBuffered(true);
 
         this.bg = Color.white;
