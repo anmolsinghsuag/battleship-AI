@@ -29,7 +29,6 @@ public class BattleshipGUI {
     private long waitTime;
     private ImageIcon shipIcon;
     private ImageIcon cross;
-    private ImageIcon start;
 
 
 
@@ -45,7 +44,6 @@ public class BattleshipGUI {
         this.waitTime=1000;
         this.shipIcon=new  ImageIcon(getClass().getResource("steering.png"));
         this.cross=new  ImageIcon(getClass().getResource("cancel.png"));
-        this.start = new ImageIcon(getClass().getResource("power-button.png"));
 
         initInfoPanel();
         initBoards();
