@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Constants {
     //Carries the constants
     public static int MAX_ROW = 10;
@@ -10,6 +13,12 @@ public class Constants {
     public static int [] SHIP_SIZE = {5,4,3,2,1};
     public static int [] SHIP_SIZES = {5,4,3,2,2,1,1};
     public static Integer [] DOMAIN = {0,1,2,3,4,5,6,7};
+
+    public static List<Double> picnicSpreads = new ArrayList<>();
+    public static List<Double> pirateSpreads = new ArrayList<>();
+    public static List<Integer> picnicResults = new ArrayList<>();
+    public static List<Double> picnicScaleFactor = new ArrayList<>();
+    public static final double pirateSpread = 6.0;
 
 
     /*

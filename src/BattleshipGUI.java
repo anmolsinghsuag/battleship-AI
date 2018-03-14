@@ -252,12 +252,12 @@ public class BattleshipGUI {
     }
 
     public void toggleSpeed() {
-        if (this.waitTime == 50) {
+        if (this.waitTime == 20) {
             this.waitTime = 1000;
             this.speed.setText("Speed Up");
             this.speed.setBackground(Color.lightGray);
         } else {
-            this.waitTime = 50;
+            this.waitTime = 20;
             this.speed.setText("Speed Down");
             this.speed.setBackground(Color.green);
         }

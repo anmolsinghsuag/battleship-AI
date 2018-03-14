@@ -10,8 +10,8 @@ public class Battleship {
 
 
     public Battleship(int totalMatches) {
-        this.player1 = new AIPlayer("Pirate");
-        this.player2 = new AIPlayer("Picnic");
+        this.player1 = new AIPlayer("Pirate",false);
+        this.player2 = new AIPlayer("Picnic",true);
         this.totalMatches = totalMatches;
         this.gamesPlayed = 0;
     }
@@ -44,7 +44,7 @@ public class Battleship {
         float[][] prob2;
         String r[];
         while (true) {
-            Thread.sleep(10);
+            Thread.sleep(1);
             if (gui.isPaused()) {
                 continue;
             }
@@ -69,14 +69,20 @@ public class Battleship {
             gui.update(this.player1.board.getBoard(), this.player1.opponentBoard, this.player2.board.getBoard(), this.player2.opponentBoard, prob1, prob2);
             gui.updateInfo(2, r);
             if (isComplete() != 0) {
+                Constants.picnicSpreads.add(player2.board.getSpread());
+                Constants.pirateSpreads.add(player1.board.getSpread());
+
                 String name;
                 if (isComplete() == 1) {
                     this.wins1++;
                     name = this.player1.getName();
+                    Constants.picnicResults.add(0);
                 } else {
                     this.wins2++;
                     name = this.player2.getName();
+                    Constants.picnicResults.add(1);
                 }
+                Constants.picnicScaleFactor.add(player2.getScaleFactor());
                 gui.updateStats(this.wins1, this.wins2);
                 System.out.println(name + " wins!");
                 String s[] = {name + " wins!", ""};
@@ -130,8 +136,8 @@ public class Battleship {
 
     //Starts next game
     public void nextGame() throws InterruptedException {
-        this.player1 = new AIPlayer("Pirate");
-        this.player2 = new AIPlayer("Picnic");
+        this.player1 = new AIPlayer("Pirate",false);
+        this.player2 = new AIPlayer("Picnic",true);
         play();
     }
 

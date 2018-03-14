@@ -1,6 +1,10 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Board {
+    private boolean learning;
+    private double spread;
 
     private int[][] board;
 
@@ -9,7 +13,8 @@ public class Board {
     }
 
 
-    public Board() {
+    public Board(boolean learning) {
+        this.learning=learning;
         this.board = getRandomBoard();
     }
 
@@ -46,7 +51,24 @@ public class Board {
             }
         }
 
-        return board;
+        double spread = calculateSpread(board);
+        double targetSpread=0.0;
+        if(this.learning){
+            targetSpread=getPicnicSpread();
+            this.spread = targetSpread;
+        }
+        else{
+            targetSpread=Constants.pirateSpread;
+            this.spread = targetSpread;
+        }
+        if(spread<targetSpread){
+            return getRandomBoard();
+        }
+        else{
+            return board;
+        }
+
+
     }
 
     public void placeShip(int[][] board, int shipValue, int shipLength) {
@@ -117,5 +139,72 @@ public class Board {
                 break;
         }
         return true;
+    }
+
+    //Minimum Spanning Spread from centres of all Placed ships
+    public double calculateSpread(int[][] grid){
+        double spread =100.0;
+        List<Coordinate> centres = new ArrayList<>();
+        for(int s=1;s<8;s++){
+            int shipFound =0;
+            int centre = Constants.SHIP_SIZES[s-1]/2;
+            int stop=0;
+            for(int i=0;i<Constants.MAX_ROW;i++){
+                for(int j=0;j<Constants.MAX_COL;j++){
+                    if(grid[i][j]==s){
+                        shipFound++;
+                        if(shipFound>=centre){
+                            centres.add(new Coordinate(i,j));
+                            stop=1;
+                            break;
+                        }
+                    }
+                }
+                if(stop==1){
+                    break;
+                }
+            }
+        }
+
+        for(int i=0;i<7;i++){
+            double sp=0.0;
+            for(int j=0;j<7;j++){
+                if(i==j){
+                    continue;
+                }
+                double distance = Math.abs(centres.get(i).getX()-centres.get(j).getX())+ Math.abs(centres.get(i).getY()-centres.get(j).getY());
+                sp+=distance;
+            }
+            if(sp<spread){
+                spread=sp;
+            }
+
+        }
+        spread=spread/7;
+        return spread;
+    }
+
+    public double getPicnicSpread(){
+        if(Constants.picnicResults.size()<25){
+            Random rand = new Random();
+            return rand.nextInt(6);
+        }
+        else{
+            double totalSpread =0.0;
+            for(int i=0;i<Constants.picnicResults.size();i++){
+                if(Constants.picnicResults.get(i)==1){
+                    totalSpread+=Constants.picnicSpreads.get(i);
+                }
+            }
+            return totalSpread/Constants.picnicResults.size();
+        }
+    }
+
+    public double getSpread() {
+       return this.spread;
+    }
+
+    public void setSpread(double spread) {
+        this.spread = spread;
     }
 }
