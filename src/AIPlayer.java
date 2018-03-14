@@ -16,10 +16,14 @@ public class AIPlayer {
     private boolean engaged;
     private Coordinate lastHit;
     private String name;
+    private boolean learning;
+    private Double scaleFactor;
 
-    public AIPlayer(String name) {
-        this.board = new Board();
+    public AIPlayer(String name,boolean learning) {
+        this.learning=learning;
+        this.board = new Board(learning);
         this.name = name;
+        this.scaleFactor=getScaleFactor();
         init();
     }
 
@@ -64,7 +68,6 @@ public class AIPlayer {
     /*******************************************************************************************************/
     //Funtions to decide the move
     public Coordinate playMove() {
-        System.out.println("Engaged =" + this.engaged);
         Coordinate move;
         if (engaged) {
             computeEngagedProbMatrix();
@@ -79,7 +82,7 @@ public class AIPlayer {
 
     //Choose hit coordinate using Prob Matrix
     public Coordinate chooseRandomHit() {
-        double p = Math.random();
+       double p = Math.random();
         double cumulativeProbability = 0.0;
         for (int i = 0; i < Constants.MAX_ROW; i++) {
             for (int j = 0; j < Constants.MAX_COL; j++) {
@@ -128,7 +131,7 @@ public class AIPlayer {
             }
         }
         for (int i = 0; i < Constants.TOTAL_SHIPS; i++) {
-            if (this.sunkShips[i]) {
+            if (this.sunkShips[i] && this.learning) {
                 scaleProbMatrix(i);
             }
         }
@@ -166,7 +169,7 @@ public class AIPlayer {
             }
         }
         for (Coordinate c : neighbours) {
-            this.probMatrix[c.getX()][c.getY()] *= 0.5;
+            this.probMatrix[c.getX()][c.getY()] *= this.scaleFactor;
         }
 
     }
@@ -376,7 +379,6 @@ public class AIPlayer {
             sinkShipWithCoordinates(this.engagedCols.get(lastHit.getY()), shipNumber);
         }
         System.out.println("Row Length=" + rowL + " Column Length=" + colL + " length=" + length + " 1: " + inRow + " 2: " + inCol);
-        System.out.println("Comes here");
 
 
     }
@@ -449,5 +451,29 @@ public class AIPlayer {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setScaleFactor(Double scaleFactor) {
+        this.scaleFactor = scaleFactor;
+    }
+
+    public Double getScaleFactor(){
+        if(!this.learning){
+            return 1.0;
+        }
+        if(Constants.picnicResults.size()<25){
+            Random rand = new Random();
+            return rand.nextDouble();
+        }
+        else{
+            double totalFactor =0.0;
+            for(int i=0;i<Constants.picnicScaleFactor.size()-1;i++){
+                if(Constants.picnicResults.get(i)==1){
+                    totalFactor+=Constants.picnicScaleFactor.get(i);
+                }
+            }
+            return totalFactor/Constants.picnicResults.size();
+
+        }
     }
 }
