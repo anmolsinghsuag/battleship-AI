@@ -98,7 +98,7 @@ public class AIPlayer {
     //Return coordinate based on previous hits
     public Coordinate chooseEngagedHit() {
         Coordinate specialCaseHit = getSpecialCaseHit();
-        if(specialCaseHit!=null) return specialCaseHit;
+        if(specialCaseHit!=null && this.learning) return specialCaseHit;
         int maxRow = -1;
         int maxCol = -1;
         float maxProb = -1;
@@ -338,11 +338,11 @@ public class AIPlayer {
                  row = r;
             }
             for(Coordinate c:cells){
-                if(leftIndex==-1 || c.getX()<leftIndex){
-                    leftIndex=c.getX();
+                if(leftIndex==-1 || c.getY()<leftIndex){
+                    leftIndex=c.getY();
                 }
-                if(rightIndex==1 || c.getX()>rightIndex){
-                    rightIndex=c.getX();
+                if(rightIndex==1 || c.getY()>rightIndex){
+                    rightIndex=c.getY();
                 }
             }
 
@@ -372,7 +372,11 @@ public class AIPlayer {
                 }
             }
             if(possible==1){
-                return this.engagedRows.get(row).get(0);
+                for(int i=leftIndex-leftMargin;i<=rightIndex+rightMargin;i++){
+                    if(this.opponentBoard[row][i]==-1){
+                        return new Coordinate(row,i);
+                    }
+                }
             }
         }
 
@@ -422,7 +426,11 @@ public class AIPlayer {
                 }
             }
             if(possible==1){
-                return this.engagedRows.get(col).get(0);
+                for(int i=topIndex-topMargin;i<=bottomIndex+bottomMargin;i++){
+                    if(this.opponentBoard[i][col]==-1){
+                        return new Coordinate(i,col);
+                    }
+                }
             }
         }
         return null;
