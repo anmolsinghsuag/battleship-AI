@@ -97,6 +97,8 @@ public class AIPlayer {
 
     //Return coordinate based on previous hits
     public Coordinate chooseEngagedHit() {
+        Coordinate specialCaseHit = getSpecialCaseHit();
+        if(specialCaseHit!=null) return specialCaseHit;
         int maxRow = -1;
         int maxCol = -1;
         float maxProb = -1;
@@ -321,6 +323,109 @@ public class AIPlayer {
                 matrix[i][j] = matrix[i][j] / total;
             }
         }
+    }
+
+    public Coordinate getSpecialCaseHit(){
+        if(this.engagedRows.keySet().size()==1 && this.engagedCols.keySet().size()>1){
+            int leftMargin=0;
+            int rightMargin=0;
+            int leftIndex = -1;
+            int rightIndex=-1;
+            int row = -1;
+            List<Coordinate> cells = new ArrayList<>();
+            for(Integer r: this.engagedRows.keySet()){
+                 cells = this.engagedRows.get(r);
+                 row = r;
+            }
+            for(Coordinate c:cells){
+                if(leftIndex==-1 || c.getX()<leftIndex){
+                    leftIndex=c.getX();
+                }
+                if(rightIndex==1 || c.getX()>rightIndex){
+                    rightIndex=c.getX();
+                }
+            }
+
+            for(int i=leftIndex-1;i>=0;i--){
+                if(this.opponentBoard[row][i]==-1){
+                    leftMargin++;
+                }
+                else{
+                    break;
+                }
+            }
+
+            for(int i=rightIndex+1;i<Constants.MAX_COL;i++){
+                if(this.opponentBoard[row][i]==-1){
+                    rightMargin++;
+                }
+                else{
+                    break;
+                }
+            }
+
+            int available = rightIndex-leftIndex+1+leftMargin+rightMargin;
+            int possible=0;
+            for(int i=0;i<7;i++){
+                if(!this.sunkShips[i] && Constants.SHIP_SIZES[i]==available){
+                    possible++;
+                }
+            }
+            if(possible==1){
+                return this.engagedRows.get(row).get(0);
+            }
+        }
+
+        else if(this.engagedCols.keySet().size()==1 && this.engagedRows.keySet().size()>1){
+            int topMargin=0;
+            int bottomMargin=0;
+            int topIndex = -1;
+            int bottomIndex=-1;
+            int col = -1;
+            List<Coordinate> cells = new ArrayList<>();
+            for(Integer r: this.engagedCols.keySet()){
+                cells = this.engagedCols.get(r);
+                col = r;
+            }
+            for(Coordinate c:cells){
+                if(topIndex==-1 || c.getX()<topIndex){
+                    topIndex=c.getX();
+                }
+                if(bottomIndex==1 || c.getX()>bottomIndex){
+                    bottomIndex=c.getX();
+                }
+            }
+
+            for(int i=topIndex-1;i>=0;i--){
+                if(this.opponentBoard[i][col]==-1){
+                    topMargin++;
+                }
+                else{
+                    break;
+                }
+            }
+
+            for(int i=bottomIndex+1;i<Constants.MAX_COL;i++){
+                if(this.opponentBoard[i][col]==-1){
+                    bottomMargin++;
+                }
+                else{
+                    break;
+                }
+            }
+
+            int available = bottomIndex-topIndex+1+topMargin+bottomMargin;
+            int possible=0;
+            for(int i=0;i<7;i++){
+                if(!this.sunkShips[i] && Constants.SHIP_SIZES[i]==available){
+                    possible++;
+                }
+            }
+            if(possible==1){
+                return this.engagedRows.get(col).get(0);
+            }
+        }
+        return null;
     }
 
     /*******************************************************************************************************/
